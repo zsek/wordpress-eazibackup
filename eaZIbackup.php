@@ -12,8 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// require_once "scheduler.php";
-
 // Activation Hook
 register_activation_hook(__FILE__, 'eazibackup_activate');
 
@@ -87,7 +85,7 @@ function eazibackup_render_dashboard() {
         return; // Show nothing if the user doesn't have the required capability
     }
 
-    $backup_folder = ABSPATH . 'wp-content/plugins/eaZIbackup/backups/';
+    $backup_folder = dirname(__FILE__) . '/backups/';
 
     // Get a list of .tgz files in the backup folder
     $backup_files = glob($backup_folder . '*.tgz') + glob($backup_folder . '*.tgz.enc');
@@ -102,7 +100,7 @@ function eazibackup_render_dashboard() {
     echo '<ul>';
     foreach ($backup_files as $backup_file) {
         $file_name = basename($backup_file);
-        $file_url = content_url('/plugins/eaZIbackup/backups/' . $file_name);
+        $file_url = content_url('backups/' . $file_name);
         $file_size = filesize($backup_file);
         $formatted_size = size_format($file_size);
         echo '<li>';
@@ -236,7 +234,7 @@ function eazibackup_schedule_callback() {
     // Secret input
     $secret = isset($schedule_data['secret']) ? esc_attr($schedule_data['secret']) : '';
     echo '<label>Expected Secret:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="eazibackup_schedule[secret]" value="' . $secret . '"></label><br>'.
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Use this secret to execute a backup job externaly.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (ie by calling '.home_url().'eazibackup-backup?secure=secret)<br><br>';
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Use this secret to execute a backup job externaly.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (ie by calling '.home_url().'/eazibackup-backup?secure=secret)<br><br>';
 
 }
 
@@ -556,7 +554,7 @@ function eaZIbackup_get_database_credentials() {
 }
 
 function eaZIbackup_delete_old_files() {
-    $backup_directory = ABSPATH . 'wp-content/plugins/eaZIbackup/backups/'; // Replace with the actual path to the backup directory
+    $backup_directory = dirname(__FILE__) . '/backups/'; // Replace with the actual path to the backup directory
     $schedule = get_option('eazibackup_schedule');
 
     // Get the list of backup files in the directory
@@ -606,7 +604,7 @@ function eaZIbackup_run_scheduled_backup() {
     $batchSize = 10000; // Set the batch size as per your requirements
 
     // Create backup directory if not exists
-    $backup_directory = ABSPATH . 'wp-content/plugins/eaZIbackup/backups/';
+    $backup_directory = dirname(__FILE__) . '/backups/';
     if (!is_dir($backup_directory)) {
         $permissions = 0755;
         mkdir($backup_directory, $permissions);
@@ -617,7 +615,7 @@ function eaZIbackup_run_scheduled_backup() {
     // Open the dump file for writing
     $file_path = $backup_directory . 'database-'.$timestamp.'.sql';
     $file_handle = fopen($file_path, 'w');
-    $backup_file = ABSPATH.'wp-content/plugins/eaZIbackup/backups/eaZIbackup-'.$timestamp.'.tgz';
+    $backup_file = dirname(__FILE__) . '/backups/eaZIbackup-'.$timestamp.'.tgz';
     
     // Start the transaction
     $connection->begin_transaction();
@@ -693,8 +691,8 @@ function eaZIbackup_run_scheduled_backup() {
     fclose($file_handle);
     // Close the database connection
     $connection->close();
-
-    $output = shell_exec('tar czvf '.$backup_file.' --exclude="./wp-content/plugins/eaZIbackup/backups/*tgz.enc" --exclude="./wp-content/plugins/eaZIbackup/backups/*tgz" -C '.ABSPATH.' .');
+    $plugindir=basename(dirname(__FILE__));
+    $output = shell_exec('tar czvf '.$backup_file.' --exclude="./wp-content/plugins/'.$plugindir.'/backups/*tgz.enc" --exclude="./wp-content/plugins/'.$plugindir.'/backups/*tgz" -C '.ABSPATH.' .');
     unlink($file_path);
 
     // Get the premium key and encryption key settings
@@ -823,6 +821,9 @@ add_action('init', 'eazibackup_register_backup_endpoint');
 // Handle the backup request
 function eazibackup_handle_backup_request() {
     // Get the secret from the query parameter
+    if (!isset($_GET['secret'])) {  // add uri check
+        return;
+    }
     $secret = isset($_GET['secret']) ? $_GET['secret'] : '';
 
     // Get the expected secret from the schedule options
@@ -833,7 +834,7 @@ function eazibackup_handle_backup_request() {
     if ($secret !== $expected_secret) {
         // Invalid secret, return an error response
         http_response_code(403); // Forbidden status code
-        echo 'Authentication failed.';
+        error_log('Cron backup request - Authentication failed.');
         exit;
     }
 
@@ -895,7 +896,7 @@ function eaZIbackup_restore() {
     $file_name = isset($_GET['file']) ? sanitize_file_name($_GET['file']) : '';
     // BUG fix for sanitize_file_name
     $file_name = str_replace('.tgz_.enc','.tgz.enc',$file_name);
-    $backup_file = ABSPATH . 'wp-content/plugins/eaZIbackup/backups/' . $file_name;
+    $backup_file = dirname(__FILE__) . '/backups/' . $file_name;
 
     // Rest of the restoration logic
     // Implement the restoration process here
@@ -938,7 +939,7 @@ function eaZIbackup_delete() {
     $file_name = isset($_GET['file']) ? sanitize_file_name($_GET['file']) : '';
     // BUG fix for sanitize_file_name
     $file_name = str_replace('.tgz_.enc','.tgz.enc',$file_name);
-    $backup_file = ABSPATH . 'wp-content/plugins/eaZIbackup/backups/' . $file_name;
+    $backup_file = dirname(__FILE__) . '/backups/' . $file_name;
     unlink($backup_file);
     // Redirect back to the dashboard after the restoration process
     wp_safe_redirect(admin_url('admin.php?page=eazibackup-dashboard'));
@@ -990,10 +991,9 @@ error_log("Premium key validation: failed!");
         }
     }
 }
+// function remove_footer_admin () {}
+// add_filter('admin_footer_text', 'remove_footer_admin')
 
-function remove_footer_admin () {}
- 
-add_filter('admin_footer_text', 'remove_footer_admin')
 
 ?>
 

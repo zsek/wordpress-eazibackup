@@ -43,6 +43,21 @@ need to run the following:
 chown www-data:www-data wp-content/plugins/eaZIbackup
 ```
 
+## Screenshots
+
+eaZIbackup Dashboard
+
+![eaZIbackup](/../screenshots/images/eaZIbackup-eaZIbackup.png?raw=true "eaZIbackup")
+
+eaZIbackup Settings
+
+![Schedule](/../screenshots/images/eaZIbackup-schedule.png?raw=true "Schedule")
+
+eaZIbackup Premium
+
+![Premium](/../screenshots/images/eaZIbackup-premium.png?raw=true "Premium")
+
+
 ## Thank you
 
 Thank you for trying out eaZIbackup.

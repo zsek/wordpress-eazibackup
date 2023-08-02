@@ -1,6 +1,6 @@
-## wordpress-eazibackup
+# wordpress-eazibackup
 
-# About
+## About
 
 A wordpress plugin for simple backups. Premium feature: automated off-site encrypted backups.
 
@@ -25,7 +25,7 @@ email to eazibackup@my-app.gr.)
 Disclaimer: This software is provided as-is, without any warranty. You have
 to check by yourself if it fits your needs.
 
-# Installation
+## Installation
 
 Until the plugin gets into wordpress.org, you simply have to make a folder
 in the plugins of your wordpress and place eaZIbackup.php in it:
@@ -43,7 +43,7 @@ need to run the following:
 chown www-data:www-data wp-content/plugins/eaZIbackup
 ```
 
-# Thank you
+## Thank you
 
 Thank you for trying out eaZIbackup.
 

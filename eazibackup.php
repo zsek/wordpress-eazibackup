@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: eaZIbackup
- * Description: eaZIbackup is a wordpress backup plugin.
- * Version: 1.0.0
+ * Plugin Name: eazibackup
+ * Description: eazibackup is a wordpress backup plugin.
+ * Version: 1.0.0-pre1
  * Author: Zissis Sekros
- * Text Domain: eaZIbackup creates a backup of your site. Download the backup file or use our Premium feature to auto-store a zero-knowledge copy, offsite.
+ * Text Domain: eazibackup creates a backup of your site. Download the backup file or use our Premium feature to auto-store a zero-knowledge copy, offsite.
  */
 
 // Exit if accessed directly.
@@ -32,8 +32,8 @@ add_action('admin_menu', 'eazibackup_add_admin_menus');
 function eazibackup_add_admin_menus() {
     // Main Menu
     add_menu_page(
-        'eaZIbackup',
-        'eaZIbackup',
+        'eazibackup',
+        'eazibackup',
         'manage_options',
         'eazibackup-dashboard',
         'eazibackup_render_dashboard' // Callback function to render the dashboard page (blank)
@@ -61,19 +61,19 @@ function eazibackup_add_admin_menus() {
 }
 
 // Add a dashboard widget to display the next scheduled run
-function eaZIbackup_add_dashboard_widget() {
+function eazibackup_add_dashboard_widget() {
     wp_add_dashboard_widget(
-        'eaZIbackup_next_run_widget',
-        'Next Scheduled eaZIbackup',
-        'eaZIbackup_next_scheduled_run'
+        'eazibackup_next_run_widget',
+        'Next Scheduled eazibackup',
+        'eazibackup_next_scheduled_run'
     );
 }
-add_action('wp_dashboard_setup', 'eaZIbackup_add_dashboard_widget');
+add_action('wp_dashboard_setup', 'eazibackup_add_dashboard_widget');
 
 function eazibackup_render_dashboard() {
     ?>
     <div class="wrap">
-        <h1>eaZIbackup Dashboard</h1>
+        <h1>eazibackup Dashboard</h1>
         <?php
         // Display the next scheduled run widget
         eazibackup_next_scheduled_run();
@@ -117,7 +117,7 @@ function eazibackup_render_dashboard() {
     $premiumkey = get_option('eazibackup_premiumkey');
     if ( $premiumkey !== "" && validate_premium($premiumkey)) {
         // API URL
-        $api_url = 'https://my-app.gr/eaZIbackup/listapi.php';
+        $api_url = 'https://my-app.gr/eazibackup/listapi.php';
         $post_data = array(
             'token' => $premiumkey,
             'site' => explode('/',home_url())[2],
@@ -276,9 +276,9 @@ function eazibackup_render_premium_page() {
     <div class="wrap">
         <h1>Premium Settings</h1>
         <p>
-        eaZIbackup premium offers automatic, zero-knowledge, remote storage for your backups.<br />
+        eazibackup premium offers automatic, zero-knowledge, remote storage for your backups.<br />
         <!-- 
-        Register at <a href=https://my-apps.gr/eaZIbackup/register.php target=_blank>https://my-apps.gr/eaZIbackup/register.php</a> to obtain a premium key and enable this feature.<br /><br />
+        Register at <a href=https://my-apps.gr/eazibackup/register.php target=_blank>https://my-apps.gr/eazibackup/register.php</a> to obtain a premium key and enable this feature.<br /><br />
         -->
         Premium is under development. You can gain early access for free, until we go live.<br />
         We have limited spots available.<br /><br />
@@ -383,7 +383,7 @@ function eazibackup_register_schedule_settings() {
     // Check if the "RUN NOW" button is clicked
     if (isset($_POST['eazibackup_run_backup'])) {
         // Run the backup immediately
-        eaZIbackup_run_scheduled_backup();
+        eazibackup_run_scheduled_backup();
 
         // Add a success message or do any other action after running the backup
         add_settings_error('eazibackup_messages', 'eazibackup_run_backup', 'Backup has been executed.', 'updated');
@@ -465,7 +465,7 @@ function eazibackup_get_next_scheduled_execution() {
 }
 
 // Helper function to get the next scheduled day based on the schedule settings
-function eaZIbackup_get_next_scheduled_day($schedule) {
+function eazibackup_get_next_scheduled_day($schedule) {
     $days_of_week = array(
         'monday'    => 'Monday',
         'tuesday'   => 'Tuesday',
@@ -497,18 +497,18 @@ function eaZIbackup_get_next_scheduled_day($schedule) {
 }
 
 // Function to display the date and time of the next scheduled run
-function eaZIbackup_next_scheduled_run() {
+function eazibackup_next_scheduled_run() {
     $next_execution_time = eazibackup_get_next_scheduled_execution();
     if ($next_execution_time) {
         // Convert the timestamp to a human-readable format, e.g., using date()
         $formatted_next_execution = date('Y-m-d h:i A', $next_execution_time);
-        echo 'Next scheduled eaZIbackup execution: ' . $formatted_next_execution;
+        echo 'Next scheduled eazibackup execution: ' . $formatted_next_execution;
     } else {
-        echo 'eaZIbackup is not scheduled to run.';
+        echo 'eazibackup is not scheduled to run.';
     }
 }
 
-function eaZIbackup_get_database_credentials() {
+function eazibackup_get_database_credentials() {
     // Check if environment variables are defined for the database credentials
     if (
         getenv('DB_HOST') &&
@@ -553,12 +553,12 @@ function eaZIbackup_get_database_credentials() {
     return false;
 }
 
-function eaZIbackup_delete_old_files() {
+function eazibackup_delete_old_files() {
     $backup_directory = dirname(__FILE__) . '/backups/'; // Replace with the actual path to the backup directory
     $schedule = get_option('eazibackup_schedule');
 
     // Get the list of backup files in the directory
-    $backup_files = glob($backup_directory . 'eaZIbackup-*.tgz') + glob($backup_directory . 'eaZIbackup-*.tgz.enc');
+    $backup_files = glob($backup_directory . 'eazibackup-*.tgz') + glob($backup_directory . 'eazibackup-*.tgz.enc');
 
     // Sort the files in descending order based on their names (latest dates first)
     rsort($backup_files);
@@ -576,9 +576,9 @@ function eaZIbackup_delete_old_files() {
 }
 
 // Callback function to perform the scheduled backup task
-function eaZIbackup_run_scheduled_backup() {
+function eazibackup_run_scheduled_backup() {
     // Get the database credentials
-    $db_credentials = eaZIbackup_get_database_credentials();
+    $db_credentials = eazibackup_get_database_credentials();
 
     // Check if backup is active before proceeding
 //    $backup_active = isset($schedule['backup_active']) && $schedule['backup_active'] === 'on';
@@ -615,7 +615,7 @@ function eaZIbackup_run_scheduled_backup() {
     // Open the dump file for writing
     $file_path = $backup_directory . 'database-'.$timestamp.'.sql';
     $file_handle = fopen($file_path, 'w');
-    $backup_file = dirname(__FILE__) . '/backups/eaZIbackup-'.$timestamp.'.tgz';
+    $backup_file = dirname(__FILE__) . '/backups/eazibackup-'.$timestamp.'.tgz';
     
     // Start the transaction
     $connection->begin_transaction();
@@ -721,10 +721,10 @@ function eaZIbackup_run_scheduled_backup() {
     unlink($input_file);
     
     // Call the function to delete old files
-    eaZIbackup_delete_old_files();
+    eazibackup_delete_old_files();
     
     // Push to remote storage if premium key allows it.
-    $serverUrl = 'https://my-app.gr/eaZIbackup/upload.php';
+    $serverUrl = 'https://my-app.gr/eazibackup/upload.php';
     $preSharedToken = $premium_key;
     $filePath = $output_file;
     $chunkSize = 1024 * 1024 * 8;
@@ -768,13 +768,13 @@ function eaZIbackup_run_scheduled_backup() {
     $md5sum = md5_file($filePath);
     $resp=json_decode($response,true);
     if ($md5sum !== $resp['md5']) {
-        error_log('Upload of eaZIbackup failed. Corruption detected.'.PHP_EOL);
+        error_log('Upload of eazibackup failed. Corruption detected.'.PHP_EOL);
     } else {
         error_log('File uploaded successfully (md5:'.$md5sum. ')!' . PHP_EOL);
     }
     fclose($fileHandle);
 }
-add_action('eazibackup_scheduled_backup_event', 'eaZIbackup_run_scheduled_backup', 10, 2);
+add_action('eazibackup_scheduled_backup_event', 'eazibackup_run_scheduled_backup', 10, 2);
 
 // Schedule the cron job
 function eazibackup_schedule_cron_job() {
@@ -839,7 +839,7 @@ function eazibackup_handle_backup_request() {
     }
 
     // Run the scheduled backup function
-    eaZIbackup_run_scheduled_backup();
+    eazibackup_run_scheduled_backup();
 
     // Send a response indicating the backup process has started
     echo 'Backup process initiated.';
@@ -885,7 +885,7 @@ function restoreDatabaseTables($dbHost, $dbUsername, $dbPassword, $dbName, $file
 }
 
 // Function to handle the restoration process
-function eaZIbackup_restore() {
+function eazibackup_restore() {
     // Check the nonce for security
     $nonce = isset($_GET['_wpnonce']) ? $_GET['_wpnonce'] : '';
     if (!wp_verify_nonce($nonce, 'restore_eazibackup')) {
@@ -918,7 +918,7 @@ function eaZIbackup_restore() {
         unlink($output_file);
     }
     //$connection = new mysqli($db_credentials['host'], $db_credentials['user'], $db_credentials['password'], $db_credentials['database']);
-    $db_credentials = eaZIbackup_get_database_credentials();
+    $db_credentials = eazibackup_get_database_credentials();
     $dump_file = $backup_file;
     $dump_file = str_replace('tgz', 'sql', $dump_file); 
     restoreDatabaseTables($db_credentials['host'], $db_credentials['user'], $db_credentials['password'], $db_credentials['database'], $dump_file);
@@ -928,7 +928,7 @@ function eaZIbackup_restore() {
     exit;
 }
 
-function eaZIbackup_delete() {
+function eazibackup_delete() {
     // Check the nonce for security
     $nonce = isset($_GET['_wpnonce']) ? $_GET['_wpnonce'] : '';
     if (!wp_verify_nonce($nonce, 'delete_eazibackup')) {
@@ -947,14 +947,14 @@ function eaZIbackup_delete() {
 }
 
 // Add the action hook to trigger the restoration process
-add_action('admin_post_restore_eazibackup', 'eaZIbackup_restore');
-add_action('admin_post_delete_eazibackup', 'eaZIbackup_delete');
+add_action('admin_post_restore_eazibackup', 'eazibackup_restore');
+add_action('admin_post_delete_eazibackup', 'eazibackup_delete');
 
 function validate_premium ($premiumkey) {
 error_log("Checking premium key... $premiumkey");
     if ($premiumkey !== "") {
         // API URL
-        $api_url = 'https://my-app.gr/eaZIbackup/validate.php';
+        $api_url = 'https://my-app.gr/eazibackup/validate.php';
 
         // Data to be sent as POST fields
         $post_data = array(
